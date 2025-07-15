@@ -3,14 +3,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
+import { useAIProvider } from '../../context/AIProviderContext';
 
 const { 
-  FiHome, FiSearch, FiCode, FiBook, FiHelpCircle, 
-  FiBookOpen, FiUser, FiBot, FiX, FiStar, FiClock 
+  FiHome, 
+  FiSearch, 
+  FiCode, 
+  FiBook, 
+  FiHelpCircle, 
+  FiBookOpen, 
+  FiUser, 
+  FiBot, 
+  FiX, 
+  FiStar, 
+  FiClock, 
+  FiSettings,
+  FiGithub
 } = FiIcons;
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const { providers, openConfigModal, activeProvider } = useAIProvider();
+  const currentProvider = providers.find(p => p.id === activeProvider);
 
   const menuItems = [
     { path: '/', icon: FiHome, label: 'Dashboard' },
@@ -20,6 +34,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/faqs', icon: FiHelpCircle, label: 'FAQs' },
     { path: '/glossary', icon: FiBookOpen, label: 'Glossary' },
     { path: '/ai-personas', icon: FiBot, label: 'AI Personas' },
+    { path: '/github-netlify', icon: FiGithub, label: 'GitHub & Netlify' },
     { path: '/profile', icon: FiUser, label: 'Profile' },
   ];
 
@@ -81,6 +96,33 @@ const Sidebar = ({ isOpen, onClose }) => {
               </Link>
             ))}
           </nav>
+
+          {/* AI Status */}
+          <div className="px-4 py-4 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold text-gray-900">AI Provider</h3>
+              <button
+                onClick={() => openConfigModal(activeProvider)}
+                className="p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              >
+                <SafeIcon icon={FiSettings} className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
+              <div className="text-xl">{currentProvider?.logo}</div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 flex items-center">
+                  {currentProvider?.name}
+                  {(currentProvider?.connected || currentProvider?.id === 'vibe') && (
+                    <span className="ml-2 w-2 h-2 rounded-full bg-green-500"></span>
+                  )}
+                </p>
+                {currentProvider?.selectedModel && (currentProvider?.connected || currentProvider?.id === 'vibe') && (
+                  <p className="text-xs text-gray-500">{currentProvider.selectedModel}</p>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Quick Links */}
           <div className="px-4 py-4 border-t border-gray-200">
